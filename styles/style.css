@@ -1,0 +1,38 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    list-style: none;
+
+    padding: 0px;
+}
+
+.dot {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: black;
+    opacity: 0.5;
+}
+
+.active .dot {
+    opacity: 1;
+}
+
+.controller {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    width: 100px;
+    height: 25px;
+}
