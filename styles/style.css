@@ -1,8 +1,41 @@
 .main {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+}
+
+.banner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.banner__slider {
+
+}
+
+.banner__control {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.banner__button {
+    width: 100px;
+    height: 25px;
+}
+
+.banner__dot {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: black;
+    opacity: 0.5;
+}
+
+.active .banner__dot {
+    opacity: 1;
 }
 
 .dots {
@@ -14,25 +47,7 @@
     padding: 0px;
 }
 
-.dot {
-    display: block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: black;
-    opacity: 0.5;
-}
-
-.active .dot {
-    opacity: 1;
-}
-
-.controller {
-    display: flex;
-    justify-content: space-between;
-}
-
-.btn {
-    width: 100px;
-    height: 25px;
+.dots li {
+    width: 10px;
+    height: 10px;
 }

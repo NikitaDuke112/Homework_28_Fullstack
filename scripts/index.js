@@ -1,143 +1,133 @@
-const images = [
-  "https://picsum.photos/id/10/2500/1667",
-  "https://picsum.photos/id/11/2500/1667",
-  "https://picsum.photos/id/12/2500/1667",
-  "https://picsum.photos/id/13/2500/1667",
-  "https://picsum.photos/id/10/2500/1667",
-  "https://picsum.photos/id/11/2500/1667",
-  "https://picsum.photos/id/12/2500/1667",
-  "https://picsum.photos/id/13/2500/1667",
+const slides = [
+    "https://picsum.photos/id/1/500/600",
+    "https://picsum.photos/id/2/500/600",
+    "https://picsum.photos/id/3/500/600",
+    "https://picsum.photos/id/4/500/600",
+    "https://picsum.photos/id/5/500/600",
+    "https://picsum.photos/id/6/500/600"
 ];
 
-class Slider {
-    constructor(items) {
-        this.slides = items;
+const slider = document.querySelector("#slider");
+const btnPrev = document.querySelector("#button-prev");
+const btnNext = document.querySelector("#button-next");
+const btnRepeat = document.querySelector("#button-repeat");
+const dots = document.querySelector("#dots");
 
-        this.INTERVAL_TIME = 3000;
-        this.autoSlideTimer = null;
+const INTERVAL_TIME = 3000;
+let autoSlideTimer;
 
-        this.currentIndex = 0;
-        this.imageBox = document.querySelector("#slide");
-        this.dotsBox = document.querySelector("#dots");
-        this.prevBtn = document.querySelector("#prev-btn");
-        this.nextBtn = document.querySelector("#next-btn");
-        this.repeatBtn = document.querySelector("#repeat-btn");
+let currentSlideIndex = 0;
 
-        this.prevBtn.addEventListener("click", () => this.prevSlide());
-        this.nextBtn.addEventListener("click", () => this.nextSlide());
-        this.repeatBtn.addEventListener("click", () => this.changeRepeat());
-        document.addEventListener("keydown", (event) => {
-            if (event.key == "ArrowLeft") {
-                this.prevSlide();
-            }
-            else if (event.key == "ArrowRight") {
-                this.nextSlide();
-            }
-        });
-        this.imageBox.addEventListener("mouseenter", () => {
-            this.isPauseByHover = true;
-            this.stopAutoSlide();
-        })
-        this.imageBox.addEventListener("mouseleave", () => {
-            this.isPauseByHover = false;
+slider.setAttribute("src", slides[currentSlideIndex]);
 
-            if (this.repeatBtn.textContent !== "Start Repeat") {
-                this.startAutoSlide();
-            }
-        });
-
-
-        this.createDots();
-        this.showSlide();
-
-        this.startAutoSlide();
+document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+        handleButtonPrevClick();
     }
-
-    showSlide() {
-        this.imageBox.setAttribute("src", this.slides[this.currentIndex]);
-        this.updateDots();
+    else if (event.key === "ArrowRight") {
+        handleButtonNextClick();
     }
+});
+btnPrev.addEventListener("click", handleButtonPrevClick);
+btnNext.addEventListener("click", handleButtonNextClick);
+btnRepeat.addEventListener("click", handleButtonRepeatClick);
 
-    nextSlide() {
-        if (this.currentIndex < this.slides.length - 1) {
-            this.currentIndex = this.currentIndex + 1;
-            this.imageBox.setAttribute("src", this.slides[this.currentIndex]);
-            this.updateDots();
-            this.resetAutoSlide();
+const createDots = () => {
+    dots.innerHTML = "";
+
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement("li");
+        dot.id = i;
+
+        if (i === currentSlideIndex) {
+            dot.classList.add("active");
         }
+        dot.innerHTML = `<span class="banner__dot"></span>`;
+
+        dots.insertAdjacentElement("beforeend", dot);
+    }
+};
+
+createDots();
+
+dots.addEventListener("click", (event) => {
+    const li = event.target.closest("li");
+
+    if (!li) return;
+
+
+    currentSlideIndex = Number(li.id);
+    slider.setAttribute("src", slides[currentSlideIndex]);
+    updateDots();
+    resetAutoSlide();
+});
+
+function repeatSlide() {
+    currentSlideIndex++;
+    if (currentSlideIndex === slides.length) {
+        currentSlideIndex = 0;
     }
 
-    prevSlide() {
-        if (this.currentIndex > 0) {
-            this.currentIndex = this.currentIndex - 1;
-            this.imageBox.setAttribute("src", this.slides[this.currentIndex]);
-            this.updateDots();
-            this.resetAutoSlide();
-        }
+    slider.setAttribute("src", slides[currentSlideIndex]);
+    updateDots();
+}
+
+function startAutoSlide() {
+    autoSlideTimer = setInterval(repeatSlide, INTERVAL_TIME);
+}
+
+function resetAutoSlide() {
+    clearInterval(autoSlideTimer);
+    startAutoSlide();
+}
+
+function stopAutoSlide() {
+    clearInterval(autoSlideTimer);
+    autoSlideTimer = null;
+}
+
+startAutoSlide();
+
+function handleButtonPrevClick() {
+    if (currentSlideIndex != 0) {
+        currentSlideIndex--;
+        slider.setAttribute("src", slides[currentSlideIndex]);
+
+        updateDots();
     }
 
-    createDots() {
-        for (let i = 0; i < this.slides.length; i++) {
-            const dot = document.createElement("li");
-            dot.classList.add("dot-item");
-            dot.addEventListener("click", () => {
-                this.currentIndex = i;
-                this.imageBox.setAttribute("src", this.slides[this.currentIndex]);
-                this.updateDots();
-                this.resetAutoSlide();
-            });
+    resetAutoSlide();
+}
 
-            dot.innerHTML = `<span class="dot"></span>`;
-            this.dotsBox.append(dot);
-        }
+function handleButtonNextClick() {
+    if (currentSlideIndex != slides.length - 1) {
+        currentSlideIndex++;
+        slider.setAttribute("src", slides[currentSlideIndex]);
+
+        updateDots();
     }
+    
+    resetAutoSlide();
+}
 
-    updateDots() {
-        const dots = document.querySelectorAll(".dot-item");
-        if (dots.length < 1) return;
-
-        for (let i = 0; i < dots.length; i++) {
-            dots[i].classList.remove("active");
-        }
-
-        dots[this.currentIndex].classList.add("active");
+function handleButtonRepeatClick() {
+    if (autoSlideTimer) {
+        stopAutoSlide();
+        btnRepeat.textContent = "Start Repeat";
     }
-
-    repeatSlide() {
-        this.currentIndex++;
-
-        if (this.currentIndex === this.slides.length) {
-            this.currentIndex = 0;
-        }
-
-        this.imageBox.setAttribute("src", this.slides[this.currentIndex]);
-        this.updateDots();
-    }
-
-    startAutoSlide() {
-        this.autoSlideTimer = setInterval(this.repeatSlide.bind(this), this.INTERVAL_TIME);
-    }
-
-    resetAutoSlide() {
-        clearInterval(this.autoSlideTimer);
-        this.startAutoSlide();
-    }
-
-    stopAutoSlide() {
-        clearInterval(this.autoSlideTimer);
-        this.autoSlideTimer = null;
-    }
-
-    changeRepeat() {
-        if (this.autoSlideTimer) {
-            this.stopAutoSlide();
-            this.repeatBtn.textContent = "Start Repeat";
-        }
-        else {
-            this.startAutoSlide();
-            this.repeatBtn.textContent = "Stop Repeat";
-        }
+    else {
+        startAutoSlide();
+        btnRepeat.textContent = "Stop Repeat";
     }
 }
 
-const slider1 = new Slider(images);
+function updateDots() {
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.getElementById(i);
+        dot.classList.remove("active");
+
+        if (i === currentSlideIndex) {
+            dot.classList.add("active");
+        }
+    }
+}
